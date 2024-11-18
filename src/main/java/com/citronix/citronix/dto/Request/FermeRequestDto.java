@@ -7,7 +7,7 @@ import java.time.LocalDate;
 public class FermeRequestDto {
 
     @NotBlank(message = "Le nom de la ferme est obligatoire.")
-    @Size(max = 100, message = "Le nom ne doit pas dépasser 100 caractères.")
+    @Size(max = 200, message = "Le nom ne doit pas dépasser 200 caractères.")
     private String nom;
 
     @NotBlank(message = "La localisation est obligatoire.")
