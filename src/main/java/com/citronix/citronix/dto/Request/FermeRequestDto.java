@@ -1,9 +1,14 @@
 package com.citronix.citronix.dto.Request;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class FermeRequestDto {
 
     @NotBlank(message = "Le nom de la ferme est obligatoire.")
@@ -15,7 +20,7 @@ public class FermeRequestDto {
     private String localisation;
 
     @NotNull(message = "La superficie est obligatoire.")
-    @Positive(message = "La superficie doit être un nombre positif.")
+    @Positive(message = "La superficie doit être supérieure à 0.")
     private Double superficie;
 
     @NotNull(message = "La date de création est obligatoire.")
