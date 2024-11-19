@@ -2,6 +2,7 @@ package com.citronix.citronix.controller;
 
 import com.citronix.citronix.dto.Request.FermeRequestDto;
 import com.citronix.citronix.dto.Response.FermeResponseDto;
+import com.citronix.citronix.dto.search.FermeSearchCriteria;
 import com.citronix.citronix.entity.Ferme;
 import com.citronix.citronix.mapper.FermeMapper;
 import com.citronix.citronix.service.Interface.FermeService;
@@ -13,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/fermes")
@@ -48,6 +50,13 @@ public class FermeController {
     public ResponseEntity<Void> deleteFerme(@PathVariable Long id) {
         fermeService.deleteFerme(id);
         return ResponseEntity.noContent().build();
+    }
+    @PostMapping("/search")
+    public ResponseEntity<List<FermeResponseDto>> searchFermes(@RequestBody FermeSearchCriteria criteria) {
+        List<Ferme> fermes = fermeService.searchFermes(criteria);
+        return ResponseEntity.ok(fermes.stream()
+                .map(fermeMapper::toDto)
+                .collect(Collectors.toList()));
     }
 
 }

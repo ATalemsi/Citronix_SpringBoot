@@ -2,9 +2,11 @@ package com.citronix.citronix.service.Implementation;
 
 import com.citronix.citronix.dto.Request.FermeRequestDto;
 import com.citronix.citronix.dto.Response.FermeResponseDto;
+import com.citronix.citronix.dto.search.FermeSearchCriteria;
 import com.citronix.citronix.entity.Ferme;
 import com.citronix.citronix.mapper.FermeMapper;
 import com.citronix.citronix.repository.FermeRepository;
+import com.citronix.citronix.searchCrireria.FermeSpecification;
 import com.citronix.citronix.service.Interface.FermeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,8 @@ public class FermeServiceImpl implements FermeService {
 
     private final FermeRepository fermeRepository;
     private final FermeMapper fermeMapper;
+    private final FermeSpecification fermeSpecification;
+
 
 
     @Override
@@ -71,5 +75,11 @@ public class FermeServiceImpl implements FermeService {
                 .orElseThrow(() -> new RuntimeException("Ferme not found"));
         fermeRepository.delete(ferme);
 
+    }
+
+    @Override
+    public List<Ferme> searchFermes(FermeSearchCriteria criteria) {
+        fermeSpecification.setCriteria(criteria);
+        return fermeRepository.findAll(fermeSpecification);
     }
 }
