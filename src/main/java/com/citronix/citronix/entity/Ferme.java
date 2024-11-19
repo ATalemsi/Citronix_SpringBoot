@@ -31,9 +31,9 @@ public class Ferme {
     @NotNull
     private String localisation;
 
-
-    @Positive
-    private double superficier;
+    @NotNull
+    @Positive(message = "La superficie doit être supérieure à 0.")
+    private Double superficie;
 
 
     @PastOrPresent
