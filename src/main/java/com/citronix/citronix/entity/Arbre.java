@@ -17,11 +17,13 @@ public class Arbre {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+
     private LocalDate datePlantation;
 
-    @Transient
-    private int agePlantation;
+
+    private Integer agePlantation;
+
+    private String productivite;
 
 
     @ManyToOne(fetch = FetchType.LAZY)

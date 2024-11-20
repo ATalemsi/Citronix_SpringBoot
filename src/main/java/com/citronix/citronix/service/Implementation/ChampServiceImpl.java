@@ -31,7 +31,6 @@ public class ChampServiceImpl implements ChampService {
         Champ champ = champMapper.toEntity(champRequestDto);
         validateSuperficie(champ, ferme);
         validateChampCount(ferme);
-
         champ.setFerme(ferme);
         Champ champSaved = champRepository.save(champ);
         return champMapper.toDto(champSaved);
