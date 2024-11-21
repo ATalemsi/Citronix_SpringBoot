@@ -9,6 +9,8 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface FermeMapper {
 
+
+    @Mapping(target = "champs", source = "champs")
     FermeResponseDto toDto(Ferme ferme);
 
     Ferme toEntity(FermeRequestDto fermeRequestDto);

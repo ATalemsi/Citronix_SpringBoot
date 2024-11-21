@@ -16,5 +16,4 @@ public class ArbreRequestDto {
     @NotNull(message = "L'ID du champ est obligatoire.")
     private Long champId;
 
-
 }

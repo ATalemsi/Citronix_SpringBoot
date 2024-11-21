@@ -33,6 +33,10 @@ public class Recolte {
     @PositiveOrZero
     private Double quantiteTotale;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "champ_id", nullable = false)
+    private Champ champ;
+
 
     @OneToMany(mappedBy = "recolte" , cascade = CascadeType.ALL)
     private List<Recoltedetails> recoltedetailsList;

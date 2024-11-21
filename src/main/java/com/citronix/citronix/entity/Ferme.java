@@ -8,7 +8,9 @@ import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -40,7 +42,7 @@ public class Ferme {
 
 
     @OneToMany(mappedBy = "ferme" ,cascade = CascadeType.ALL ,orphanRemoval = true)
-    private Set<Champ> champs = new HashSet<>();
+    private List<Champ> champs = new ArrayList<>();
 
 
     public Ferme(Long fermeId) {

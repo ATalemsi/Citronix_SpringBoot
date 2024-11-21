@@ -65,7 +65,9 @@ public class ArbreServiceImpl implements ArbreService {
         } else {
             productivite = "20 kg / saison";
         }
+
         arbre.setProductivite(productivite);
+        arbreRepository.save(arbre);
 
         return productivite;
     }
