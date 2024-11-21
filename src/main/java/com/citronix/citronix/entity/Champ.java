@@ -32,5 +32,7 @@ public class Champ {
     @OneToMany(mappedBy = "champ",cascade = CascadeType.ALL)
     private List<Arbre> arbreList;
 
+   // @OneToMany(mappedBy = "champ",cascade = CascadeType.ALL)
+   // private Recolte recolte;
 
 }
