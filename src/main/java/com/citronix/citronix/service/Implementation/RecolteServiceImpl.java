@@ -13,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RecolteServiceImpl implements RecolteService {
@@ -46,6 +49,55 @@ public class RecolteServiceImpl implements RecolteService {
         Recolte savedRecolte  = recolteRepository.save(recolte);
 
         return recolteMapper.toDto(savedRecolte);
+    }
+
+    @Override
+    public RecolteResponseDto updateRecolte(Long id, RecolteRequestDto recolteRequestDto) {
+        Recolte existingRecolte = recolteRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Recolte not found"));
+
+        Champ champ = champRepository.findById(recolteRequestDto.getChampId())
+                .orElseThrow(() -> new IllegalArgumentException("Champ not found"));
+
+        if (recolteRequestDto.getChampId() != null && recolteRequestDto.getSaison() != null){
+            validateRecolteConstraints(champ, recolteRequestDto.getSaison());
+            existingRecolte.setSaison(recolteRequestDto.getSaison());
+        }
+
+        if (recolteRequestDto.getDateRecolte() != null){
+            existingRecolte.setDateRecolte(recolteRequestDto.getDateRecolte());
+        }
+        if (recolteRequestDto.getChampId() != null) {
+            existingRecolte.setChamp(champ);
+        }
+        Recolte updatedRecolte = recolteRepository.save(existingRecolte);
+
+        return recolteMapper.toDto(updatedRecolte);
+    }
+
+    @Override
+    public void deleteRecolte(Long id) {
+        if (!recolteRepository.existsById(id)) {
+            throw new IllegalArgumentException("Recolte not found");
+        }
+        recolteRepository.deleteById(id);
+
+    }
+
+    @Override
+    public RecolteResponseDto getRecolteById(Long id) {
+        Recolte recolte = recolteRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Recolte not found"));
+
+        return recolteMapper.toDto(recolte);
+    }
+
+    @Override
+    public List<RecolteResponseDto> getAllRecoltes() {
+        List<Recolte> recoltes = recolteRepository.findAll();
+        return recoltes.stream()
+                .map(recolteMapper::toDto)
+                .collect(Collectors.toList());
     }
 
 }
