@@ -10,6 +10,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", uses = ChampMapper.class)
 public interface ArbreMapper {
+
     @Mapping(target = "champResponseDto", source = "champ")
     ArbreResponseDto toDto(Arbre arbre);
 
