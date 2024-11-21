@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = ArbreMapper.class)
+@Mapper(componentModel = "spring", uses = ArbreMapper.class , imports = RecolteMapper.class)
 public interface DetailRecolteMapper {
     DetailRecolteResponseDto toDto(Recoltedetails detailRecolte);
 
