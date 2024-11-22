@@ -39,8 +39,8 @@ public class RecolteController {
 
     @PatchMapping("/update/{id}")
     public ResponseEntity<Map<String, Object>> updateRecolte(
-            @PathVariable Long id,  // Get ID from URL
-            @Validated(UpdateGroup.class) @RequestBody RecolteRequestDto recolteRequestDto) {  // Request body for update fields
+            @PathVariable Long id,
+            @Validated(UpdateGroup.class) @RequestBody RecolteRequestDto recolteRequestDto) {
 
         RecolteResponseDto response = recolteService.updateRecolte(id, recolteRequestDto);
 

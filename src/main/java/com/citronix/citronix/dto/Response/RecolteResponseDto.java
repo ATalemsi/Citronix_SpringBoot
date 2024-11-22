@@ -13,7 +13,7 @@ public class RecolteResponseDto {
     private Saison saison;
     private LocalDate dateRecolte;
     private Double quantiteTotale;
-    private ChampResponseDto champ; // Renamed to match mapper
+    private ChampResponseDto champ;
     private List<DetailRecolteResponseDto> detailsRecolte;
 
 
