@@ -11,6 +11,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses ={ ArbreMapper.class , RecolteMapper.class })
 public interface DetailRecolteMapper {
 
+
     @Mapping(target = "arbreId", source = "arbre.id")
     @Mapping(target = "recolteId", source = "recolte.id")
     DetailRecolteResponseDto toDto(Recoltedetails detailRecolte);
