@@ -8,9 +8,10 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {DetailRecolteMapper.class})
+@Mapper(componentModel = "spring", uses = {DetailRecolteMapper.class, ChampMapper.class})
 public interface RecolteMapper {
-    @Mapping(target = "champResponseDto", source = "champ")
+    @Mapping(target = "champ", source = "champ")
+    @Mapping(target = "detailsRecolte", source = "recoltedetailsList")
     RecolteResponseDto toDto(Recolte recolte);
 
     Recolte toEntity(RecolteRequestDto recolteRequestDto);
