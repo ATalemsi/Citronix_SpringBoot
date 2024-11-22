@@ -23,11 +23,16 @@ public class Vente {
     @NotNull
     private LocalDate dateVente;
 
+    @Embedded
+    private Client client;
+
     @NotNull
     private Double prixUnitaire;
 
     @NotNull
     private Double quantiteVendue;
+
+    private Double revenue;
 
     @ManyToOne
     @JoinColumn(name = "recolte_id")

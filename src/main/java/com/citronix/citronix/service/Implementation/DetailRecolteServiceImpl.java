@@ -44,7 +44,6 @@ public class DetailRecolteServiceImpl implements DetailRecolteService {
         Optional<Recoltedetails> existingDetail = detailRecolteRepository.findByArbreIdAndRecolteSaison(arbre.getId(), recolte.getSaison());
 
         if (existingDetail.isPresent()) {
-            // If currentDetailId is null (add operation) or IDs differ (update operation), throw conflict error
             if (currentDetailId == null || !existingDetail.get().getId().equals(currentDetailId)) {
                 throw new IllegalArgumentException("Arbre " + arbreId + " already harvested for this season.");
             }

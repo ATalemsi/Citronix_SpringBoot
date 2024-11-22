@@ -3,6 +3,7 @@ package com.citronix.citronix.dto.search;
 import lombok.Data;
 
 import java.time.LocalDate;
+
 @Data
 public class FermeSearchCriteria {
 
