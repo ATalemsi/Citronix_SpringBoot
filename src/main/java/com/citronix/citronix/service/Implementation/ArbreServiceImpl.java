@@ -38,6 +38,17 @@ public class ArbreServiceImpl implements ArbreService {
 
         Arbre arbreSaved = arbreRepository.save(arbre);
 
+        int age = calculateAge(arbreSaved.getId());
+        arbreSaved.setAgePlantation(age);
+
+
+        String productivite = calculateAndSetProductivite(arbreSaved.getId());
+
+        arbreSaved.setAgePlantation(age);
+        arbreSaved.setProductivite(productivite);
+
+        arbreRepository.save(arbreSaved);
+
         return arbreMapper.toDto(arbreSaved);
     }
 
