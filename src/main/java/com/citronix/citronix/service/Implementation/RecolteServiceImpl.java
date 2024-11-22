@@ -30,7 +30,7 @@ public class RecolteServiceImpl implements RecolteService {
         boolean exists = recolteRepository.existsByChampAndSaison(champ, saison);
 
         if (exists){
-            throw new IllegalArgumentException("A récolte already exists for this champ in the given season.");
+            throw new IllegalArgumentException("A recolte already exists for this champ in the given season.");
         }
 
     }
@@ -57,7 +57,7 @@ public class RecolteServiceImpl implements RecolteService {
                 .orElseThrow(() -> new IllegalArgumentException("Recolte not found"));
 
         Champ champ = champRepository.findById(recolteRequestDto.getChampId())
-                .orElseThrow(() -> new IllegalArgumentException("Champ not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Champ not found "));
 
         if (recolteRequestDto.getChampId() != null && recolteRequestDto.getSaison() != null){
             validateRecolteConstraints(champ, recolteRequestDto.getSaison());
