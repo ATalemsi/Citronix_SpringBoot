@@ -32,27 +32,5 @@ public class ArbreController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
     }
 
-    @GetMapping("/age/{id}")
-    public ResponseEntity<Map<String, Object>> getArbreAge(@PathVariable Long id) {
-        int age = arbreService.calculateAge(id);
 
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("status", HttpStatus.OK.value());
-        responseBody.put("message", "Arbre age calculated and stored successfully");
-        responseBody.put("age", age);
-
-        return ResponseEntity.ok(responseBody);
-    }
-
-    @GetMapping("/productivite/{id}")
-    public ResponseEntity<Map<String, Object>> getArbreProductivite(@PathVariable Long id) {
-        String Productivite = arbreService.calculateAndSetProductivite(id);
-
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("status", HttpStatus.OK.value());
-        responseBody.put("message", "Arbre Productivity determined and stored successfully");
-        responseBody.put("Productivity", Productivite);
-
-        return ResponseEntity.ok(responseBody);
-    }
 }
