@@ -5,6 +5,5 @@ import com.citronix.citronix.dto.Response.ArbreResponseDto;
 
 public interface ArbreService {
     ArbreResponseDto addArbre(ArbreRequestDto arbreRequestDto);
-    int calculateAge(Long arbreId);
-    String calculateAndSetProductivite(Long arbreId);
+
 }

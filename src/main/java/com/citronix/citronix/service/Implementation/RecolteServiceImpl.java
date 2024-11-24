@@ -1,10 +1,12 @@
 package com.citronix.citronix.service.Implementation;
 
 import com.citronix.citronix.dto.Request.RecolteRequestDto;
+import com.citronix.citronix.dto.Response.ChampResponseDto;
 import com.citronix.citronix.dto.Response.RecolteResponseDto;
 import com.citronix.citronix.entity.Champ;
 import com.citronix.citronix.entity.Enum.Saison;
 import com.citronix.citronix.entity.Recolte;
+import com.citronix.citronix.mapper.ChampMapper;
 import com.citronix.citronix.mapper.RecolteMapper;
 import com.citronix.citronix.repository.ChampRepository;
 import com.citronix.citronix.repository.RecolteRepository;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +26,8 @@ public class RecolteServiceImpl implements RecolteService {
     private final RecolteRepository recolteRepository;
     private final ChampRepository champRepository;
     private final RecolteMapper recolteMapper;
+
+    private final ChampMapper champMapper;
 
 
     @Override
@@ -44,8 +49,6 @@ public class RecolteServiceImpl implements RecolteService {
 
         Recolte recolte = recolteMapper.toEntity(recolteRequestDto);
         recolte.setChamp(champ);
-
-
         Recolte savedRecolte  = recolteRepository.save(recolte);
 
         return recolteMapper.toDto(savedRecolte);
@@ -70,9 +73,17 @@ public class RecolteServiceImpl implements RecolteService {
         if (recolteRequestDto.getChampId() != null) {
             existingRecolte.setChamp(champ);
         }
+        if (existingRecolte.getRecoltedetailsList() == null) {
+            existingRecolte.setRecoltedetailsList(new ArrayList<>());
+        }
         Recolte updatedRecolte = recolteRepository.save(existingRecolte);
+        System.out.println("Updated Recolte: " + updatedRecolte);
 
-        return recolteMapper.toDto(updatedRecolte);
+        ChampResponseDto champResponseDto = champMapper.toDto(champ);
+
+        RecolteResponseDto resultDto = recolteMapper.toDto(updatedRecolte);
+        resultDto.setChamp(champResponseDto);
+        return resultDto;
     }
 
     @Override

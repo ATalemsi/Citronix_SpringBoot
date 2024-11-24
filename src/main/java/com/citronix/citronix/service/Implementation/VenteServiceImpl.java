@@ -24,6 +24,8 @@ public class VenteServiceImpl implements VenteService {
     private final VenteRepository venteRepository;
     private final RecolteRepository recolteRepository;
     private final VenteMapper venteMapper;
+
+
     @Override
     public VenteResponseDto addVente(VenteRequestDto venteRequestDto) {
         if (venteRequestDto.getQuantiteVendue() == null || venteRequestDto.getQuantiteVendue() <= 0) {

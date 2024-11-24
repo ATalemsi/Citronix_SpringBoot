@@ -25,7 +25,6 @@ public class ArbreServiceImpl implements ArbreService {
     private final ChampRepository champRepository;
 
 
-    @Override
     public ArbreResponseDto addArbre(ArbreRequestDto arbreRequestDto) {
         Champ champ = champRepository.findById(arbreRequestDto.getChampId())
                 .orElseThrow(() -> new IllegalArgumentException("Champ not found"));
@@ -36,51 +35,40 @@ public class ArbreServiceImpl implements ArbreService {
         Arbre arbre = arbreMapper.toEntity(arbreRequestDto);
         arbre.setChamp(champ);
 
-        Arbre arbreSaved = arbreRepository.save(arbre);
+        arbre = arbreRepository.save(arbre);
 
-        int age = calculateAge(arbreSaved.getId());
-        arbreSaved.setAgePlantation(age);
+        // Retrieve the saved arbre once
+        Arbre savedArbre = arbreRepository.findById(arbre.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Arbre not found"));
 
+        int age = calculateAge(savedArbre);
+        savedArbre.setAgePlantation(age);
 
-        String productivite = calculateAndSetProductivite(arbreSaved.getId());
+        String productivite = calculateAndSetProductivite(savedArbre);
+        savedArbre.setProductivite(productivite);
 
-        arbreSaved.setAgePlantation(age);
-        arbreSaved.setProductivite(productivite);
+        savedArbre = arbreRepository.save(savedArbre);
 
-        arbreRepository.save(arbreSaved);
-
-        return arbreMapper.toDto(arbreSaved);
+        return arbreMapper.toDto(savedArbre);
     }
 
-    @Override
-    public int calculateAge(Long arbreId) {
-        Arbre arbre = arbreRepository.findById(arbreId)
-                .orElseThrow(() -> new IllegalArgumentException("Arbre not found"));
-        int age = Period.between(arbre.getDatePlantation(), LocalDate.now()).getYears();
-        arbre.setAgePlantation(age);
-        arbreRepository.save(arbre);
-        return age;
+    private int calculateAge(Arbre arbre) {
+        return Period.between(arbre.getDatePlantation(), LocalDate.now()).getYears();
     }
 
-    @Override
-    public String calculateAndSetProductivite(Long arbreId) {
-        Arbre arbre = arbreRepository.findById(arbreId)
-                .orElseThrow(() -> new IllegalArgumentException("Arbre not found"));
-        int age = arbre.getAgePlantation();
-
-        String productivite;
-        if (age < 3) {
-            productivite = "2.5 kg / saison";
-        } else if (age <= 10) {
-            productivite = "12 kg / saison";
-        } else {
-            productivite = "20 kg / saison";
+    private String calculateAndSetProductivite(Arbre arbre) {
+        Integer age = arbre.getAgePlantation();
+        if (age == null) {
+            throw new IllegalArgumentException("Age of plantation is not set for arbre with id: " + arbre.getId());
         }
 
-        arbre.setProductivite(productivite);
-        arbreRepository.save(arbre);
-
-        return productivite;
+        if (age < 3) {
+            return "2.5 kg / saison";
+        } else if (age <= 10) {
+            return "12 kg / saison";
+        } else {
+            return "20 kg / saison";
+        }
     }
 
 
