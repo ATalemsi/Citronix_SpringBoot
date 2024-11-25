@@ -2,6 +2,7 @@ package com.citronix.citronix.dto.Request;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class FermeRequestDto {
 
     @NotBlank(message = "Le nom de la ferme est obligatoire.")

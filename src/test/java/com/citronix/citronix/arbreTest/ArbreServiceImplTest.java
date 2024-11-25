@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 public class ArbreServiceImplTest {
 
+
     @InjectMocks
     private ArbreServiceImpl arbreService;
 
@@ -47,32 +48,39 @@ public class ArbreServiceImplTest {
         Long arbreId = 1L;
         LocalDate datePlantation = LocalDate.of(2023, 4, 15);
 
-        ArbreRequestDto arbreRequestDto = new ArbreRequestDto();
-        arbreRequestDto.setChampId(champId);
-        arbreRequestDto.setDatePlantation(datePlantation);
+        ArbreRequestDto arbreRequestDto = ArbreRequestDto.builder()
+                .champId(champId)
+                .datePlantation(datePlantation)
+                .build();
 
-        Champ champ = new Champ();
-        champ.setId(champId);
-        champ.setSuperficie(1.0);
-        champ.setArbreList(new ArrayList<>());
+        Champ champ = Champ.builder()
+                .id(champId)
+                .superficie(1.0)
+                .arbreList(new ArrayList<>()) // Initialize arbreList
+                .build();
 
-        Arbre arbre = new Arbre();
-        arbre.setDatePlantation(datePlantation);
+        Arbre arbre = Arbre.builder()
+                .datePlantation(datePlantation)
+                .champ(champ)
+                .build();
 
-        Arbre savedArbre = new Arbre();
-        savedArbre.setId(arbreId);
-        savedArbre.setDatePlantation(datePlantation);
-        savedArbre.setChamp(champ);
+        Arbre savedArbre = Arbre.builder()
+                .id(arbreId)
+                .datePlantation(datePlantation)
+                .champ(champ)
+                .build();
 
-        Arbre updatedArbre = new Arbre();
-        updatedArbre.setId(arbreId);
-        updatedArbre.setDatePlantation(datePlantation);
-        updatedArbre.setChamp(champ);
-        updatedArbre.setAgePlantation(1);
-        updatedArbre.setProductivite("2.5 kg / saison");
+        Arbre updatedArbre = Arbre.builder()
+                .id(arbreId)
+                .datePlantation(datePlantation)
+                .champ(champ)
+                .agePlantation(1)
+                .productivite("2.5 kg / saison")
+                .build();
 
-        ArbreResponseDto responseDto = new ArbreResponseDto();
-        responseDto.setId(arbreId);
+        ArbreResponseDto responseDto = ArbreResponseDto.builder()
+                .id(arbreId)
+                .build();
 
         when(champRepository.findById(champId)).thenReturn(Optional.of(champ));
         when(arbreMapper.toEntity(arbreRequestDto)).thenReturn(arbre);
@@ -94,19 +102,20 @@ public class ArbreServiceImplTest {
         verify(arbreMapper, times(1)).toDto(updatedArbre);
     }
 
-
-
     @Test
     void testAddArbre_Failure_InvalidPlantingPeriod() {
-
+        // Arrange
         Long champId = 1L;
         LocalDate invalidDate = LocalDate.of(2023, 6, 15);
-        ArbreRequestDto arbreRequestDto = new ArbreRequestDto();
-        arbreRequestDto.setChampId(champId);
-        arbreRequestDto.setDatePlantation(invalidDate);
 
-        Champ champ = new Champ();
-        champ.setId(champId);
+        ArbreRequestDto arbreRequestDto = ArbreRequestDto.builder()
+                .champId(champId)
+                .datePlantation(invalidDate)
+                .build();
+
+        Champ champ = Champ.builder()
+                .id(champId)
+                .build();
 
         when(champRepository.findById(champId)).thenReturn(Optional.of(champ));
 
@@ -120,27 +129,29 @@ public class ArbreServiceImplTest {
 
     @Test
     void testAddArbre_Failure_ExceedsDensity() {
-
+        // Arrange
         Long champId = 1L;
         LocalDate datePlantation = LocalDate.of(2023, 4, 15);
-        ArbreRequestDto arbreRequestDto = new ArbreRequestDto();
-        arbreRequestDto.setChampId(champId);
-        arbreRequestDto.setDatePlantation(datePlantation);
 
-        Champ champ = new Champ();
-        champ.setId(champId);
-        champ.setSuperficie(0.1);
-
+        ArbreRequestDto arbreRequestDto = ArbreRequestDto.builder()
+                .champId(champId)
+                .datePlantation(datePlantation)
+                .build();
 
         List<Arbre> arbreList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            arbreList.add(new Arbre());
+            arbreList.add(Arbre.builder().build());
         }
-        champ.setArbreList(arbreList);
+
+        Champ champ = Champ.builder()
+                .id(champId)
+                .superficie(0.1)
+                .arbreList(arbreList) // Set arbreList with 10 trees
+                .build();
 
         when(champRepository.findById(champId)).thenReturn(Optional.of(champ));
 
-
+        // Act & Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 arbreService.addArbre(arbreRequestDto));
         assertEquals("Le nombre d'arbres dépasse la densité maximale autorisée de 100 arbres par hectare.", exception.getMessage());

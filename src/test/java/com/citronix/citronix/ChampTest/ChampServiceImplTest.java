@@ -45,52 +45,51 @@ public class ChampServiceImplTest {
     void testAddChamp_Success() {
 
         Long fermeId = 1L;
-        ChampRequestDto champRequestDto = new ChampRequestDto();
-        champRequestDto.setFermeId(fermeId);
-        champRequestDto.setSuperficie(10.0);
+        ChampRequestDto champRequestDto = ChampRequestDto.builder()
+                .fermeId(fermeId)
+                .superficie(10.0)
+                .build();
 
-        Ferme ferme = new Ferme();
-        ferme.setId(fermeId);
-        ferme.setSuperficie(100.0);
+        Ferme ferme = Ferme.builder()
+                .id(fermeId)
+                .superficie(100.0)
+                .champs(new ArrayList<>())
+                .build();
 
+        Champ champ = Champ.builder()
+                .superficie(champRequestDto.getSuperficie())
+                .ferme(ferme)
+                .build();
 
-        Champ champ = new Champ();
-        champ.setSuperficie(champRequestDto.getSuperficie());
-        champ.setFerme(ferme);
-
-
-        Champ savedChamp = new Champ();
-        savedChamp.setId(1L);
-
+        Champ savedChamp = Champ.builder()
+                .id(1L)
+                .build();
 
         when(fermeRepository.findById(fermeId)).thenReturn(Optional.of(ferme));
         when(champMapper.toEntity(champRequestDto)).thenReturn(champ);
         when(champRepository.save(champ)).thenReturn(savedChamp);
 
-
-        ChampResponseDto responseDto = new ChampResponseDto();
-        responseDto.setId(1L);
+        ChampResponseDto responseDto = ChampResponseDto.builder()
+                .id(1L)
+                .build();
         when(champMapper.toDto(savedChamp)).thenReturn(responseDto);
-
 
         ChampResponseDto result = champService.addChamp(champRequestDto);
 
-
         assertNotNull(result);
         assertEquals(1L, result.getId());
-
 
         verify(fermeRepository, times(1)).findById(fermeId);
         verify(champRepository, times(1)).save(champ);
         verify(champMapper, times(1)).toDto(savedChamp);
     }
 
-
     @Test
     void testAddChamp_FermeNotFound() {
         Long fermeId = 1L;
-        ChampRequestDto champRequestDto = new ChampRequestDto();
-        champRequestDto.setFermeId(fermeId);
+        ChampRequestDto champRequestDto = ChampRequestDto.builder()
+                .fermeId(fermeId)
+                .build();
 
         when(fermeRepository.findById(fermeId)).thenReturn(Optional.empty());
 
@@ -111,10 +110,17 @@ public class ChampServiceImplTest {
 
     @Test
     void testGetAllChamps() {
-        List<Champ> champs = List.of(new Champ(), new Champ());
+        List<Champ> champs = List.of(
+                Champ.builder().build(),
+                Champ.builder().build()
+        );
+
         when(champRepository.findAll()).thenReturn(champs);
 
-        List<ChampResponseDto> responseDtos = List.of(new ChampResponseDto(), new ChampResponseDto());
+        List<ChampResponseDto> responseDtos = List.of(
+                ChampResponseDto.builder().build(),
+                ChampResponseDto.builder().build()
+        );
         when(champMapper.toDtoList(champs)).thenReturn(responseDtos);
 
         List<ChampResponseDto> result = champService.getAllChamps();
@@ -127,8 +133,9 @@ public class ChampServiceImplTest {
     @Test
     void testDeleteChamp_Success() {
         Long champId = 1L;
-        Champ champ = new Champ();
-        champ.setId(champId);
+        Champ champ = Champ.builder()
+                .id(champId)
+                .build();
 
         when(champRepository.findById(champId)).thenReturn(Optional.of(champ));
 

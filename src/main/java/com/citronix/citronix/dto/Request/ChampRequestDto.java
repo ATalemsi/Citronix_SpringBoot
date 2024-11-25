@@ -3,9 +3,11 @@ package com.citronix.citronix.dto.Request;
 import com.citronix.citronix.dto.UpdateGroup;
 import com.citronix.citronix.entity.Ferme;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class ChampRequestDto
 {
     @NotNull(message = "La superficie est requise.")

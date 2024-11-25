@@ -44,165 +44,105 @@ public class RecolteServiceImplTest {
     @Mock
     private ChampMapper champMapper;
 
-    private RecolteRequestDto validRequest;
     private Recolte mockRecolte;
-    private RecolteResponseDto expectedResponse;
-    private ChampResponseDto mockChampResponseDto;
-
     private Champ mockChamp;
+    private RecolteRequestDto validRequest;
+    private RecolteResponseDto expectedResponse;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        mockChamp = new Champ();
-        mockChamp.setId(1L);
-        mockChamp.setSuperficie(1.0);
+        mockChamp = Champ.builder()
+                .id(1L)
+                .superficie(1.0)
+                .build();
 
-        mockChamp = new Champ();
-        mockChamp.setId(1L);
-        mockChamp.setSuperficie(1.0);
+        mockRecolte = Recolte.builder()
+                .id(1L)
+                .saison(Saison.ETE)
+                .dateRecolte(LocalDate.now().minusDays(1))
+                .champ(mockChamp)
+                .recoltedetailsList(new ArrayList<>())
+                .build();
 
-        mockChampResponseDto = new ChampResponseDto();
-        mockChampResponseDto.setId(1L);
-        mockChampResponseDto.setSuperficie(1.0);
+        validRequest = RecolteRequestDto.builder()
+                .champId(1L)
+                .saison(Saison.AUTOMME)
+                .dateRecolte(LocalDate.now())
+                .build();
 
-
-        mockRecolte = new Recolte();
-        mockRecolte.setId(1L);
-        mockRecolte.setSaison(Saison.ETE);
-        mockRecolte.setDateRecolte(LocalDate.now().minusDays(1));
-        mockRecolte.setChamp(mockChamp);
-        mockRecolte.setRecoltedetailsList(new ArrayList<>());
-
-
-        validRequest = new RecolteRequestDto();
-        validRequest.setChampId(1L);
-        validRequest.setSaison(Saison.AUTOMME);
-        validRequest.setDateRecolte(LocalDate.now());
-
-        expectedResponse = new RecolteResponseDto();
-        expectedResponse.setSaison(Saison.AUTOMME);
-        expectedResponse.setDateRecolte(LocalDate.now());
-        expectedResponse.setChamp(mockChampResponseDto);
-
-
+        expectedResponse = RecolteResponseDto.builder()
+                .saison(Saison.AUTOMME)
+                .dateRecolte(LocalDate.now())
+                .champ(ChampResponseDto.builder()
+                        .id(1L)
+                        .superficie(1.0)
+                        .build())
+                .build();
     }
 
     @Test
     void testAddRecolte_Success() {
-
-        RecolteRequestDto requestDto = new RecolteRequestDto();
-        requestDto.setSaison(Saison.ETE);
-        requestDto.setDateRecolte(LocalDate.now().minusDays(1));
-        requestDto.setChampId(mockChamp.getId());
-
         when(champRepository.findById(mockChamp.getId())).thenReturn(Optional.of(mockChamp));
-        when(recolteMapper.toEntity(requestDto)).thenReturn(mockRecolte);
+        when(recolteMapper.toEntity(validRequest)).thenReturn(mockRecolte);
         when(recolteRepository.save(mockRecolte)).thenReturn(mockRecolte);
-        when(recolteMapper.toDto(mockRecolte)).thenReturn(new RecolteResponseDto());
+        when(recolteMapper.toDto(mockRecolte)).thenReturn(expectedResponse);
 
-        RecolteResponseDto result = recolteService.addRecolte(requestDto);
+        RecolteResponseDto result = recolteService.addRecolte(validRequest);
 
-        assertNotNull(result, "Result should not be null");
-        verify(champRepository, times(1)).findById(mockChamp.getId());
-        verify(recolteMapper, times(1)).toEntity(requestDto);
-        verify(recolteRepository, times(1)).save(mockRecolte);
+        assertNotNull(result);
+        verify(champRepository).findById(mockChamp.getId());
+        verify(recolteMapper).toEntity(validRequest);
+        verify(recolteRepository).save(mockRecolte);
     }
 
     @Test
     void testUpdateRecolte_Success() {
-
-        Champ mockChamp = new Champ();
-        mockChamp.setId(1L);
-        mockChamp.setSuperficie(1.0);
-
-        Recolte mockRecolte = new Recolte();
-        mockRecolte.setId(1L);
-        mockRecolte.setSaison(Saison.ETE);
-        mockRecolte.setDateRecolte(LocalDate.now().minusDays(1));
-        mockRecolte.setChamp(mockChamp);
-        mockRecolte.setRecoltedetailsList(new ArrayList<>());
-
-        RecolteRequestDto validRequest = new RecolteRequestDto();
-        validRequest.setChampId(1L);
-        validRequest.setSaison(Saison.AUTOMME);
-        validRequest.setDateRecolte(LocalDate.now());
-
-        RecolteResponseDto expectedResponse = new RecolteResponseDto();
-        expectedResponse.setSaison(Saison.AUTOMME);
-        expectedResponse.setDateRecolte(LocalDate.now());
-
         when(recolteRepository.findById(mockRecolte.getId())).thenReturn(Optional.of(mockRecolte));
         when(champRepository.findById(mockChamp.getId())).thenReturn(Optional.of(mockChamp));
         when(recolteRepository.save(mockRecolte)).thenReturn(mockRecolte);
-
-        ChampResponseDto champResponseDto = new ChampResponseDto();
-        champResponseDto.setId(1L);
-        champResponseDto.setSuperficie(1.0);
-        when(champMapper.toDto(mockChamp)).thenReturn(champResponseDto);
-
+        when(champMapper.toDto(mockChamp)).thenReturn(expectedResponse.getChamp());
         when(recolteMapper.toDto(mockRecolte)).thenReturn(expectedResponse);
 
         RecolteResponseDto result = recolteService.updateRecolte(mockRecolte.getId(), validRequest);
 
-        assertNotNull(result, "Result should not be null");
-        assertEquals(Saison.AUTOMME, result.getSaison(), "Saison should be AUTOMNE");
-        assertEquals(validRequest.getDateRecolte(), result.getDateRecolte(), "DateRecolte should match");
-        assertEquals(1L, result.getChamp().getId(), "Champ ID should match");
-        assertEquals(1.0, result.getChamp().getSuperficie(), "Champ Superficie should match");
+        assertNotNull(result);
+        assertEquals(Saison.AUTOMME, result.getSaison());
+        assertEquals(validRequest.getDateRecolte(), result.getDateRecolte());
+        assertEquals(mockChamp.getId(), result.getChamp().getId());
 
-        // Verify repository calls
-        verify(recolteRepository, times(1)).findById(mockRecolte.getId());
-        verify(champRepository, times(1)).findById(mockChamp.getId());
-        verify(recolteMapper, times(1)).toDto(mockRecolte);
-        verify(champMapper, times(1)).toDto(mockChamp);  // Ensure that this interaction happens
+        verify(recolteRepository).findById(mockRecolte.getId());
+        verify(champRepository).findById(mockChamp.getId());
+        verify(recolteMapper).toDto(mockRecolte);
+        verify(champMapper).toDto(mockChamp);
     }
-
-
-
 
     @Test
     void testUpdateRecolte_NotFound() {
-        // Arrange: Mock repository methods
         when(recolteRepository.findById(1L)).thenReturn(Optional.empty());
-
-        // Act and Assert: Verify exception is thrown
-        assertThrows(IllegalArgumentException.class, () -> {
-            recolteService.updateRecolte(1L, validRequest);
-        });
+        assertThrows(IllegalArgumentException.class, () -> recolteService.updateRecolte(1L, validRequest));
     }
 
     @Test
     void testDeleteRecolte_Success() {
-
         when(recolteRepository.existsById(mockRecolte.getId())).thenReturn(true);
         doNothing().when(recolteRepository).deleteById(mockRecolte.getId());
 
         recolteService.deleteRecolte(mockRecolte.getId());
 
-        verify(recolteRepository, times(1)).existsById(mockRecolte.getId());
-        verify(recolteRepository, times(1)).deleteById(mockRecolte.getId());
+        verify(recolteRepository).existsById(mockRecolte.getId());
+        verify(recolteRepository).deleteById(mockRecolte.getId());
     }
-
 
     @Test
     void testDeleteRecolte_NotFound() {
-
         when(recolteRepository.existsById(mockRecolte.getId())).thenReturn(false);
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            recolteService.deleteRecolte(mockRecolte.getId());
-        });
-
-
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> recolteService.deleteRecolte(mockRecolte.getId()));
         assertEquals("Recolte not found", exception.getMessage());
 
-
-        verify(recolteRepository, times(1)).existsById(mockRecolte.getId());
+        verify(recolteRepository).existsById(mockRecolte.getId());
         verify(recolteRepository, never()).deleteById(mockRecolte.getId());
     }
-
-
-
 }

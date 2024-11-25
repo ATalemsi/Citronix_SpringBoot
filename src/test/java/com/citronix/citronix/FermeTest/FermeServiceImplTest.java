@@ -40,14 +40,15 @@ public class FermeServiceImplTest {
 
     @Test
     void testCreateFerme() {
-        FermeRequestDto requestDto = new FermeRequestDto();
-        requestDto.setNom("Ferme A");
-        requestDto.setLocalisation("Localisation A");
-        requestDto.setSuperficie(100.5);
+        FermeRequestDto requestDto = FermeRequestDto.builder()
+                .nom("Ferme A")
+                .localisation("Localisation A")
+                .superficie(100.5)
+                .build();
 
-        Ferme ferme = new Ferme();
-        Ferme savedFerme = new Ferme();
-        FermeResponseDto responseDto = new FermeResponseDto();
+        Ferme ferme = Ferme.builder().build();
+        Ferme savedFerme = Ferme.builder().build();
+        FermeResponseDto responseDto = FermeResponseDto.builder().build();
 
         when(fermeMapper.toEntity(requestDto)).thenReturn(ferme);
         when(fermeRepository.save(any(Ferme.class))).thenReturn(savedFerme);
@@ -64,10 +65,8 @@ public class FermeServiceImplTest {
     @Test
     void testGetFermeById() {
         Long id = 1L;
-        Ferme ferme = new Ferme();
-        ferme.setId(id);
-        FermeResponseDto responseDto = new FermeResponseDto();
-        responseDto.setId(id);
+        Ferme ferme = Ferme.builder().id(id).build();
+        FermeResponseDto responseDto = FermeResponseDto.builder().id(id).build();
 
         when(fermeRepository.findById(id)).thenReturn(Optional.of(ferme));
         when(fermeMapper.toDto(ferme)).thenReturn(responseDto);
@@ -82,8 +81,7 @@ public class FermeServiceImplTest {
     @Test
     void testDeleteFerme() {
         Long id = 1L;
-        Ferme ferme = new Ferme();
-        ferme.setId(id);
+        Ferme ferme = Ferme.builder().id(id).build();
 
         when(fermeRepository.findById(id)).thenReturn(Optional.of(ferme));
 
@@ -95,43 +93,43 @@ public class FermeServiceImplTest {
 
     @Test
     void testGetAllFermes() {
+        Ferme ferme1 = Ferme.builder()
+                .id(1L)
+                .nom("Ferme1")
+                .localisation("Location1")
+                .superficie(100.0)
+                .dateCreation(LocalDate.parse("2024-01-01"))
+                .build();
 
-        Ferme ferme1 = new Ferme();
-        ferme1.setId(1L);
-        ferme1.setNom("Ferme1");
-        ferme1.setLocalisation("Location1");
-        ferme1.setSuperficie(100.0);
-        ferme1.setDateCreation(LocalDate.parse("2024-01-01"));
-
-        Ferme ferme2 = new Ferme();
-        ferme2.setId(2L);
-        ferme2.setNom("Ferme2");
-        ferme2.setLocalisation("Location2");
-        ferme2.setSuperficie(150.0);
-        ferme2.setDateCreation(LocalDate.parse("2024-02-01"));
+        Ferme ferme2 = Ferme.builder()
+                .id(2L)
+                .nom("Ferme2")
+                .localisation("Location2")
+                .superficie(150.0)
+                .dateCreation(LocalDate.parse("2024-02-01"))
+                .build();
 
         List<Ferme> fermes = Arrays.asList(ferme1, ferme2);
 
+        FermeResponseDto fermeResponseDto1 = FermeResponseDto.builder()
+                .id(1L)
+                .nom("Ferme1")
+                .localisation("Location1")
+                .superficie(100.0)
+                .dateCreation(LocalDate.parse("2024-01-01"))
+                .build();
 
-        FermeResponseDto fermeResponseDto1 = new FermeResponseDto();
-        fermeResponseDto1.setId(1L);
-        fermeResponseDto1.setNom("Ferme1");
-        fermeResponseDto1.setLocalisation("Location1");
-        fermeResponseDto1.setSuperficie(100.0);
-        fermeResponseDto1.setDateCreation(LocalDate.parse("2024-01-01"));
-
-        FermeResponseDto fermeResponseDto2 = new FermeResponseDto();
-        fermeResponseDto2.setId(2L);
-        fermeResponseDto2.setNom("Ferme2");
-        fermeResponseDto2.setLocalisation("Location2");
-        fermeResponseDto2.setSuperficie(150.0);
-        fermeResponseDto2.setDateCreation(LocalDate.parse("2024-02-01"));
+        FermeResponseDto fermeResponseDto2 = FermeResponseDto.builder()
+                .id(2L)
+                .nom("Ferme2")
+                .localisation("Location2")
+                .superficie(150.0)
+                .dateCreation(LocalDate.parse("2024-02-01"))
+                .build();
 
         List<FermeResponseDto> expectedDtos = Arrays.asList(fermeResponseDto1, fermeResponseDto2);
 
         when(fermeRepository.findAll()).thenReturn(fermes);
-
-
         when(fermeMapper.toDto(any(Ferme.class))).thenReturn(fermeResponseDto1).thenReturn(fermeResponseDto2);
 
         List<FermeResponseDto> result = fermeService.getAllFermes();

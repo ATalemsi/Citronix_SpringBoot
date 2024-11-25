@@ -5,11 +5,13 @@ import com.citronix.citronix.dto.UpdateGroup;
 import com.citronix.citronix.entity.Enum.Saison;
 import com.citronix.citronix.utils.ValidSaison;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
+@Builder
 public class RecolteRequestDto {
 
     @NotNull(groups = CreateGroup.class, message = "La saison est obligatoire.")
