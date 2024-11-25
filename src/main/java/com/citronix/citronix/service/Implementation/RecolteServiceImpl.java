@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,24 +32,22 @@ public class RecolteServiceImpl implements RecolteService {
 
 
     @Override
-    public void validateRecolteConstraints(Champ champ, Saison saison) {
-        boolean exists = recolteRepository.existsByChampAndSaison(champ, saison);
+    public void validateRecolteConstraints(Saison saison, LocalDate dateRecolte) {
+        boolean exists = recolteRepository.existsBySaisonAndDateRecolte(saison, dateRecolte);
 
-        if (exists){
-            throw new IllegalArgumentException("A recolte already exists for this champ in the given season.");
+        if (exists) {
+            throw new IllegalArgumentException("A recolte already exists for the given season and date.");
         }
-
     }
 
     @Override
     public RecolteResponseDto addRecolte(RecolteRequestDto recolteRequestDto) {
-        Champ champ = champRepository.findById(recolteRequestDto.getChampId())
-                .orElseThrow(() -> new IllegalArgumentException("Champ not found"));
 
-        validateRecolteConstraints(champ,recolteRequestDto.getSaison());
+        Saison saison = determineSaison(recolteRequestDto.getDateRecolte());
+        recolteRequestDto.setSaison(saison);
+        validateRecolteConstraints(recolteRequestDto.getSaison(), recolteRequestDto.getDateRecolte());
 
         Recolte recolte = recolteMapper.toEntity(recolteRequestDto);
-        recolte.setChamp(champ);
         Recolte savedRecolte  = recolteRepository.save(recolte);
 
         return recolteMapper.toDto(savedRecolte);
@@ -59,31 +58,27 @@ public class RecolteServiceImpl implements RecolteService {
         Recolte existingRecolte = recolteRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Recolte not found"));
 
-        Champ champ = champRepository.findById(recolteRequestDto.getChampId())
-                .orElseThrow(() -> new IllegalArgumentException("Champ not found "));
 
-        if (recolteRequestDto.getChampId() != null && recolteRequestDto.getSaison() != null){
-            validateRecolteConstraints(champ, recolteRequestDto.getSaison());
+        if (recolteRequestDto.getDateRecolte() != null) {
+            Saison calculatedSaison = determineSaison(recolteRequestDto.getDateRecolte());
+
+            if (recolteRequestDto.getSaison() == null || !recolteRequestDto.getSaison().equals(existingRecolte.getSaison())) {
+                recolteRequestDto.setSaison(calculatedSaison);
+            }
+            existingRecolte.setDateRecolte(recolteRequestDto.getDateRecolte());
+        }
+
+        if (recolteRequestDto.getSaison() != null && !recolteRequestDto.getSaison().equals(existingRecolte.getSaison())) {
+            validateRecolteConstraints(recolteRequestDto.getSaison(), recolteRequestDto.getDateRecolte());
             existingRecolte.setSaison(recolteRequestDto.getSaison());
         }
 
-        if (recolteRequestDto.getDateRecolte() != null){
-            existingRecolte.setDateRecolte(recolteRequestDto.getDateRecolte());
-        }
-        if (recolteRequestDto.getChampId() != null) {
-            existingRecolte.setChamp(champ);
-        }
         if (existingRecolte.getRecoltedetailsList() == null) {
             existingRecolte.setRecoltedetailsList(new ArrayList<>());
         }
         Recolte updatedRecolte = recolteRepository.save(existingRecolte);
-        System.out.println("Updated Recolte: " + updatedRecolte);
 
-        ChampResponseDto champResponseDto = champMapper.toDto(champ);
-
-        RecolteResponseDto resultDto = recolteMapper.toDto(updatedRecolte);
-        resultDto.setChamp(champResponseDto);
-        return resultDto;
+        return recolteMapper.toDto(updatedRecolte);
     }
 
     @Override
@@ -109,6 +104,19 @@ public class RecolteServiceImpl implements RecolteService {
         return recoltes.stream()
                 .map(recolteMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    private Saison determineSaison(LocalDate dateRecolte) {
+        int month = dateRecolte.getMonthValue();
+        if (month == 12 || month == 1 || month == 2) {
+            return Saison.HIVER;
+        } else if (month >= 3 && month <= 5) {
+            return Saison.PRINTEMPS;
+        } else if (month >= 6 && month <= 8) {
+            return Saison.ETE;
+        } else {
+            return Saison.AUTOMME;
+        }
     }
 
 }

@@ -10,7 +10,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {DetailRecolteMapper.class, ChampMapper.class})
 public interface RecolteMapper {
-    @Mapping(target = "champ", source = "champ")
+
     @Mapping(target = "detailsRecolte", source = "recoltedetailsList")
     RecolteResponseDto toDto(Recolte recolte);
 

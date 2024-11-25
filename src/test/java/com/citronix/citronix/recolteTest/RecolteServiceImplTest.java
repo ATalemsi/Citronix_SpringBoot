@@ -53,21 +53,14 @@ public class RecolteServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        mockChamp = Champ.builder()
-                .id(1L)
-                .superficie(1.0)
-                .build();
-
         mockRecolte = Recolte.builder()
                 .id(1L)
                 .saison(Saison.ETE)
                 .dateRecolte(LocalDate.now().minusDays(1))
-                .champ(mockChamp)
                 .recoltedetailsList(new ArrayList<>())
                 .build();
 
         validRequest = RecolteRequestDto.builder()
-                .champId(1L)
                 .saison(Saison.AUTOMME)
                 .dateRecolte(LocalDate.now())
                 .build();
@@ -75,16 +68,11 @@ public class RecolteServiceImplTest {
         expectedResponse = RecolteResponseDto.builder()
                 .saison(Saison.AUTOMME)
                 .dateRecolte(LocalDate.now())
-                .champ(ChampResponseDto.builder()
-                        .id(1L)
-                        .superficie(1.0)
-                        .build())
                 .build();
     }
 
     @Test
     void testAddRecolte_Success() {
-        when(champRepository.findById(mockChamp.getId())).thenReturn(Optional.of(mockChamp));
         when(recolteMapper.toEntity(validRequest)).thenReturn(mockRecolte);
         when(recolteRepository.save(mockRecolte)).thenReturn(mockRecolte);
         when(recolteMapper.toDto(mockRecolte)).thenReturn(expectedResponse);
@@ -92,17 +80,18 @@ public class RecolteServiceImplTest {
         RecolteResponseDto result = recolteService.addRecolte(validRequest);
 
         assertNotNull(result);
-        verify(champRepository).findById(mockChamp.getId());
+        assertEquals(Saison.AUTOMME, result.getSaison());
+        assertEquals(validRequest.getDateRecolte(), result.getDateRecolte());
+
         verify(recolteMapper).toEntity(validRequest);
         verify(recolteRepository).save(mockRecolte);
+        verify(recolteMapper).toDto(mockRecolte);
     }
 
     @Test
     void testUpdateRecolte_Success() {
         when(recolteRepository.findById(mockRecolte.getId())).thenReturn(Optional.of(mockRecolte));
-        when(champRepository.findById(mockChamp.getId())).thenReturn(Optional.of(mockChamp));
         when(recolteRepository.save(mockRecolte)).thenReturn(mockRecolte);
-        when(champMapper.toDto(mockChamp)).thenReturn(expectedResponse.getChamp());
         when(recolteMapper.toDto(mockRecolte)).thenReturn(expectedResponse);
 
         RecolteResponseDto result = recolteService.updateRecolte(mockRecolte.getId(), validRequest);
@@ -110,12 +99,10 @@ public class RecolteServiceImplTest {
         assertNotNull(result);
         assertEquals(Saison.AUTOMME, result.getSaison());
         assertEquals(validRequest.getDateRecolte(), result.getDateRecolte());
-        assertEquals(mockChamp.getId(), result.getChamp().getId());
 
         verify(recolteRepository).findById(mockRecolte.getId());
-        verify(champRepository).findById(mockChamp.getId());
+        verify(recolteRepository).save(mockRecolte);
         verify(recolteMapper).toDto(mockRecolte);
-        verify(champMapper).toDto(mockChamp);
     }
 
     @Test

@@ -12,7 +12,7 @@ import java.util.List;
 public interface DetailRecolteMapper {
 
 
-    @Mapping(target = "arbreId", source = "arbre.id")
+    @Mapping(target = "arbre", source = "arbre")
     @Mapping(target = "recolteId", source = "recolte.id")
     DetailRecolteResponseDto toDto(Recoltedetails detailRecolte);
 

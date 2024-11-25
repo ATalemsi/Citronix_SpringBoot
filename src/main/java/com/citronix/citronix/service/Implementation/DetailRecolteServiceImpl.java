@@ -29,17 +29,13 @@ public class DetailRecolteServiceImpl implements DetailRecolteService {
 
 
     private void validateDetailRecolteConstraints(Long arbreId, Long recolteId, Long currentDetailId) {
+
         Recolte recolte = recolteRepository.findById(recolteId)
                 .orElseThrow(() -> new IllegalArgumentException("Recolte not found"));
 
+
         Arbre arbre = arbreRepository.findById(arbreId)
                 .orElseThrow(() -> new IllegalArgumentException("Arbre not found"));
-
-        if (!arbre.getChamp().getId().equals(recolte.getChamp().getId())) {
-            throw new IllegalArgumentException(
-                    "Arbre " + arbreId + " does not belong to Champ " + recolte.getChamp().getId() + " of Recolte " + recolteId
-            );
-        }
 
         Optional<Recoltedetails> existingDetail = detailRecolteRepository.findByArbreIdAndRecolteSaison(arbre.getId(), recolte.getSaison());
 

@@ -21,12 +21,12 @@ public class Recoltedetails {
     @PositiveOrZero
     private Double quantite;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "arbre_id")
     private Arbre arbre;
 
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recolte_id")
     private Recolte recolte;
 }

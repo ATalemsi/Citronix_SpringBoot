@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -24,7 +26,7 @@ public class ArbreServiceImpl implements ArbreService {
     private final ArbreMapper arbreMapper;
     private final ChampRepository champRepository;
 
-
+    @Override
     public ArbreResponseDto addArbre(ArbreRequestDto arbreRequestDto) {
         Champ champ = champRepository.findById(arbreRequestDto.getChampId())
                 .orElseThrow(() -> new IllegalArgumentException("Champ not found"));
@@ -37,14 +39,13 @@ public class ArbreServiceImpl implements ArbreService {
 
         arbre = arbreRepository.save(arbre);
 
-        // Retrieve the saved arbre once
         Arbre savedArbre = arbreRepository.findById(arbre.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Arbre not found"));
 
         int age = calculateAge(savedArbre);
         savedArbre.setAgePlantation(age);
 
-        String productivite = calculateAndSetProductivite(savedArbre);
+        String productivite = calculateAndSetProductivite(age);
         savedArbre.setProductivite(productivite);
 
         savedArbre = arbreRepository.save(savedArbre);
@@ -52,19 +53,35 @@ public class ArbreServiceImpl implements ArbreService {
         return arbreMapper.toDto(savedArbre);
     }
 
+    @Override
+    public List<ArbreResponseDto> getAllArbres() {
+        List<Arbre> arbres = arbreRepository.findAll();
+        return arbres.stream()
+                .map(arbreMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public void deleteArbre(Long arbreId) {
+        Arbre arbre = arbreRepository.findById(arbreId)
+                .orElseThrow(() -> new IllegalArgumentException("Arbre not found"));
+
+        arbreRepository.delete(arbre);
+    }
+
     private int calculateAge(Arbre arbre) {
         return Period.between(arbre.getDatePlantation(), LocalDate.now()).getYears();
     }
 
-    private String calculateAndSetProductivite(Arbre arbre) {
-        Integer age = arbre.getAgePlantation();
-        if (age == null) {
-            throw new IllegalArgumentException("Age of plantation is not set for arbre with id: " + arbre.getId());
+    private String calculateAndSetProductivite(int agePlantation) {
+        if (agePlantation == 0) {
+            throw new IllegalArgumentException("Age of plantation is not set for arbre ");
         }
 
-        if (age < 3) {
+        if (agePlantation < 3) {
             return "2.5 kg / saison";
-        } else if (age <= 10) {
+        } else if (agePlantation <= 10) {
             return "12 kg / saison";
         } else {
             return "20 kg / saison";
@@ -92,4 +109,6 @@ public class ArbreServiceImpl implements ArbreService {
             throw new IllegalArgumentException("Les arbres ne peuvent être plantés qu'entre mars et mai.");
         }
     }
+
+
 }

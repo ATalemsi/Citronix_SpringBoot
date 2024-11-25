@@ -5,6 +5,8 @@ import com.citronix.citronix.entity.Enum.Saison;
 import com.citronix.citronix.entity.Recolte;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDate;
+
 public interface RecolteRepository extends JpaRepository<Recolte, Long> {
-    boolean existsByChampAndSaison(Champ champ, Saison saison);
+    boolean existsBySaisonAndDateRecolte(Saison saison, LocalDate dateRecolte);
 }

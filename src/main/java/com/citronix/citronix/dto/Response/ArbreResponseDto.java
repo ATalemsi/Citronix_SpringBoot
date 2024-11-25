@@ -10,7 +10,7 @@ import java.time.LocalDate;
 public class ArbreResponseDto {
     private Long id;
     private LocalDate datePlantation;
-    private int age;
+    private int agePlantation;
     private String productivite;
     private ChampResponseDto champResponseDto;
 }

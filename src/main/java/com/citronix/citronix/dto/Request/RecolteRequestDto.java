@@ -14,7 +14,6 @@ import java.time.LocalDate;
 @Builder
 public class RecolteRequestDto {
 
-    @NotNull(groups = CreateGroup.class, message = "La saison est obligatoire.")
     @ValidSaison
     private Saison saison;
 
@@ -22,6 +21,4 @@ public class RecolteRequestDto {
     @PastOrPresent(message = "La date de récolte doit être dans le passé ou le présent.")
     private LocalDate dateRecolte;
 
-    @NotNull(groups = CreateGroup.class, message = "Champ ID is required.")
-    private Long champId;
 }
